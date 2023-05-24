@@ -41,6 +41,20 @@ LoginPage({Key? key}) : super(key: key);
                 hintText: 'Password',
                 obscureText: true,
               ),
+              const SizedBox(height: 10),
+               const Padding(
+                 padding:  EdgeInsets.symmetric(horizontal: 30),
+                 child: Row(
+                   mainAxisAlignment: MainAxisAlignment.end,
+                   children: [
+                     Text(
+                        'Forgot Password?',
+                      style: TextStyle(color: Colors.orangeAccent),
+              ),
+                   ],
+                 ),
+               )
+
             ],
           ),
         ),
