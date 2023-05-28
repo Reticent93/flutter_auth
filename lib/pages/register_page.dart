@@ -5,20 +5,22 @@ import 'package:flutter_auth/components/my_textfield.dart';
 import 'package:flutter_auth/components/square_tile.dart';
 import 'package:flutter_auth/services/auth_service.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   final Function()? onTap;
 
-  const LoginPage({Key? key, required this.onTap}) : super(key: key);
+  const RegisterPage({Key? key, required this.onTap}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  void signInUser() async {
+
+  void signUpUser() async {
     showDialog(
       context: context,
       builder: (context) {
@@ -28,20 +30,27 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
 
-    //sign in user
+    //create user
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      if(passwordController.text == confirmPasswordController.text) {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Passwords do not match'), backgroundColor: Colors.red,
+          dismissDirection: DismissDirection.down)
+        );
+      }
     } on FirebaseException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User Not Found'), backgroundColor: Colors.red,
-              dismissDirection: DismissDirection.down)
+            const SnackBar(content: Text('User Not Found'), backgroundColor: Colors.red,
+                dismissDirection: DismissDirection.down)
         );
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password Is Incorrect'), backgroundColor: Colors.red,
-            dismissDirection: DismissDirection.down)
+            const SnackBar(content: Text('Password Is Incorrect'), backgroundColor: Colors.red,
+                dismissDirection: DismissDirection.down)
         );
       }
 
@@ -94,34 +103,34 @@ class _LoginPageState extends State<LoginPage> {
                 child:  Row(
                   children: [
                     Text(
-                      'Log In',
+                      'Register',
                       style: TextStyle(
                         color: Colors.orangeAccent,
                         fontSize: 20,
                       ),
                     ),
-                ],
+                  ],
+                ),
               ),
-        ),
-                     Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
-                      child: Row(
-                         children: [
-                           const Text(
-                            'Not a member?',
-                            style: TextStyle(color: Colors.orangeAccent),
-                      ),
-                        GestureDetector(
-                          onTap: widget.onTap,
-                          child: const Text(
-                          ' Register now',
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
-                      ),
-                        ),
-                         ],
-                       ),
+               Padding(
+                padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
+                child: Row(
+                  children: [
+                    const Text(
+                      'Already a member?',
+                      style: TextStyle(color: Colors.orangeAccent),
                     ),
+                    GestureDetector(
+                      onTap: widget.onTap,
+                      child: const Text(
+                        ' Login now',
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               const Padding(
                 padding: EdgeInsets.fromLTRB(30, 10, 30, 0),
@@ -139,6 +148,13 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
               ),
               const SizedBox(height: 10),
+
+              MyTextField(
+                controller: confirmPasswordController,
+                hintText: 'Confirm Password',
+                obscureText: true,
+              ),
+              const SizedBox(height: 10),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25),
                 child: Row(
@@ -147,33 +163,27 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 10),
               MyButton(
-                text: 'Sign In',
-                onTap: signInUser,
+                text: 'Sign Up',
+                onTap: signUpUser,
               ),
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
                   children: [
-
-                     const Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.orangeAccent),
-                      ),
-
                     Expanded(
                         child: Divider(
-                      thickness: .05,
-                      color: Colors.grey[800],
-                    )),
+                          thickness: .05,
+                          color: Colors.grey[800],
+                        )),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                     ),
                     Expanded(
                         child: Divider(
-                      thickness: .05,
-                      color: Colors.grey[800],
-                    ))
+                          thickness: .05,
+                          color: Colors.grey[800],
+                        ))
                   ],
                 ),
               ),
@@ -184,11 +194,11 @@ class _LoginPageState extends State<LoginPage> {
                   SquareTile(
                       onTap: () => AuthService().signInWithGoogle(),
                       imagePath: 'lib/images/google.png'),
-                 const SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   SquareTile(
-                      onTap: () {},
+                      onTap: (){},
                       imagePath: 'lib/images/apple.png'),
                 ],
               ),
